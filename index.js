@@ -11,6 +11,8 @@ const { makeExecutableSchema, delegateToSchema } = require('graphql-tools')
 
 const fetch = require("node-fetch");
 
+const { gatewaySchema, parsePath, defaultQuery } = require('./world')
+
 // Define your own http client here
 // async function callBackend({
 //   context,
@@ -29,6 +31,7 @@ async function callBackend({
   //   string
   // >)}`;
   console.log('callBackend: ', { method, body, baseUrl, path, query, headers })
+  path =  parsePath(path)
   const url = `${baseUrl}${path}?${new URLSearchParams(query)}`
   const response = await fetch(url, {
     method,
@@ -52,61 +55,22 @@ async function callBackend({
 }
 
 // yaml
-createSchema({ 
-  swaggerSchema: `../gm/poems.yaml`, 
+createSchema({
+  // swaggerSchema: `../gm/yaml/poems.yaml`, 
+  swaggerSchema: `../gm/yaml/world.yaml`, 
   // swaggerSchema: `../gm/poems.json`, 
   callBackend,
 })
-  .then(schema => {
-    // console.log(schema)
-    // const extendedSchema = `
-    //     extend type Poem {
-    //       author_info: [Author!]!
-    //     }
-    // `;
-    const gatewaySchema = stitchSchemas({
-      // subschemas: [ schema, extendedSchema ],
-      subschemas: [ schema ],
-      // mergeTypes: true, // << optional in v7
-      typeDefs: `
-        extend type Poem {
-          author_info: [Author]
-        }
-      `,
-      resolvers: {
-        Poem: {  
-          author_info: {
-            fragment: `... on Poem { author }`,
-            resolve: (parent, args, context, info) => {
-                console.log('parent: ', parent.author)
-                console.log('args: ', args)
-                // console.log('context: ', context)
-                // console.log('info: ', info.schema)
-                const author_like = parent.author;
-                // return info.mergeInfo.delegateToSchema({
-                return delegateToSchema({
-                    schema: info.schema,
-                    // operation: 'getAuthor',
-                    operation: 'query',
-                    // fieldName: 'author_like',
-                    fieldName: 'getAuthor',
-                    args: { author_like },
-                    context,
-                    info
-                })
-            }
-          }, 
-        },
-      }},
-    )
+  .then(schema => { 
+    console.log(schema);
     app.use(
       '/graphql',
       graphqlHTTP(() => {
         return {
           // schema,
-          schema: gatewaySchema,
-          // schema1,
-          graphiql: true,
+          schema: gatewaySchema([schema]),
+          // graphiql: true,
+          graphiql: { defaultQuery }
         };
       }),
     );
