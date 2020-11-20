@@ -10,9 +10,11 @@
   "author": "roro",
   "license": "ISC",
   "dependencies": {
+    "@graphql-tools/stitch": "^7.0.4",
     "express": "^4.17.1",
     "express-graphql": "^0.11.0",
     "graphql": "^15.4.0",
+    "graphql-tools": "^7.0.1",
     "node-fetch": "^2.6.1",
     "swagger-to-graphql": "^4.0.2"
   },
