@@ -115,5 +115,6 @@ query EU {
 module.exports =  {
   gatewaySchema,
   parsePath,
-  defaultQuery
+  defaultQuery,
+  schemaFile: `../gm/yaml/world.yaml`, 
 }

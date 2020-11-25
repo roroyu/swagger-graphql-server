@@ -11,7 +11,8 @@ const { makeExecutableSchema, delegateToSchema } = require('graphql-tools')
 
 const fetch = require("node-fetch");
 
-const { gatewaySchema, parsePath, defaultQuery } = require('./world')
+// const { gatewaySchema, parsePath, defaultQuery } = require('./world')
+const { gatewaySchema, parsePath, defaultQuery, schemaFile } = require('./poem')
 
 // Define your own http client here
 // async function callBackend({
@@ -57,7 +58,8 @@ async function callBackend({
 // yaml
 createSchema({
   // swaggerSchema: `../gm/yaml/poems.yaml`, 
-  swaggerSchema: `../gm/yaml/world.yaml`, 
+  // swaggerSchema: `../gm/yaml/world.yaml`, 
+  swaggerSchema: schemaFile, 
   // swaggerSchema: `../gm/poems.json`, 
   callBackend,
 })
